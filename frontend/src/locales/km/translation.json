@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "overview": "ទិដ្ឋភាពទូទៅ",
+    "catalog": "កាតាឡុក",
+    "inventory": "សន្និធិ",
+    "purchases": "ការទិញ",
+    "sales": "ការលក់",
+    "customers": "អតិថិជន",
+    "orders": "ការបញ្ជាទិញ",
+    "partners": "ដៃគូពាណិជ្ជកម្ម"
+  },
+  "auth": {
+    "signOut": "ចាកចេញ",
+    "signIn": "ចូលគណនី",
+    "email": "អ៊ីមែល",
+    "password": "លេខសម្ងាត់"
+  },
+  "inventory": {
+    "title": "គ្រប់គ្រងសន្និធិ",
+    "search": "ស្វែងរក...",
+    "addProduct": "បន្ថែមផលិតផល",
+    "stock": "ស្តុក",
+    "sku": "SKU",
+    "price": "តម្លៃ",
+    "status": "ស្ថានភាព"
+  },
+  "orders": {
+    "title": "ការបញ្ជាទិញ",
+    "createOrder": "បង្កើតការបញ្ជាទិញ",
+    "orderId": "លេខសម្គាល់បញ្ជាទិញ",
+    "date": "កាលបរិច្ឆេទ",
+    "total": "សរុប"
+  },
+  "partners": {
+    "title": "ដៃគូពាណិជ្ជកម្ម",
+    "addPartner": "បន្ថែមដៃគូ",
+    "type": "ប្រភេទ",
+    "supplier": "អ្នកផ្គត់ផ្គង់",
+    "customer": "អតិថិជន"
+  },
+  "language": {
+    "en": "English",
+    "km": "ខ្មែរ"
+  }
+}

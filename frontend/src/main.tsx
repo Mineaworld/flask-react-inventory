@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { App } from "./App";
 import { AuthProvider } from "./features/auth/AuthProvider";
 import "./styles.css";
+import "./lib/i18n";
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -9,21 +9,24 @@ import type { Role } from "../../types/api";
 import { Button } from "../ui/Button";
 import { GlobalProductSearch } from "./GlobalProductSearch";
 import { ExpandingSearchDock } from "../ui/expanding-search-dock-shadcnui";
+import { LanguageSwitcher } from "../ui/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 type NavItem = {
   icon: typeof Boxes;
   label: string;
+  labelKey?: string;
   roles?: Role[];
   to: string;
 };
 
 const navigation: NavItem[] = [
-  { icon: Archive, label: "Overview", to: "/" },
-  { icon: Boxes, label: "Catalog", to: "/catalog" },
-  { icon: PackageSearch, label: "Inventory", to: "/inventory" },
-  { icon: ReceiptText, label: "Purchases", roles: ["admin", "manager"], to: "/purchases" },
-  { icon: ShoppingCart, label: "Sales", to: "/sales" },
-  { icon: Users, label: "Customers", to: "/customers" },
+  { icon: Archive, label: "Overview", labelKey: "nav.overview", to: "/" },
+  { icon: Boxes, label: "Catalog", labelKey: "nav.catalog", to: "/catalog" },
+  { icon: PackageSearch, label: "Inventory", labelKey: "nav.inventory", to: "/inventory" },
+  { icon: ReceiptText, label: "Purchases", labelKey: "nav.purchases", roles: ["admin", "manager"], to: "/purchases" },
+  { icon: ShoppingCart, label: "Sales", labelKey: "nav.sales", to: "/sales" },
+  { icon: Users, label: "Customers", labelKey: "nav.customers", to: "/customers" },
 ];
 
 type NavLinksProps = {
@@ -32,17 +35,22 @@ type NavLinksProps = {
   role: Role;
 };
 
-const NavLinks = ({ collapsed = false, onNavigate, role }: NavLinksProps) => (
-  <nav aria-label="Main navigation" className="space-y-1">
-    {navigation.filter((item) => !item.roles || item.roles.includes(role)).map((item) => {
-      const Icon = item.icon;
-      return <NavLink end={item.to === "/"} key={item.to} onClick={onNavigate} to={item.to} className={({ isActive }) => cn("group flex min-h-11 items-center gap-3 rounded-[0.625rem] px-3 text-sm font-medium transition-[background-color,color,box-shadow] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70", isActive ? "bg-[var(--nav-active)] text-[var(--on-ink)] shadow-[inset_0_0_0_1px_oklch(1_0_0/0.08)]" : "text-[var(--on-ink-muted)] hover:bg-white/[0.07] hover:text-[var(--on-ink)]", collapsed && "justify-center px-0")} title={collapsed ? item.label : undefined}><Icon size={18} strokeWidth={1.8} className="shrink-0" /><span className={cn("truncate", collapsed && "sr-only")}>{item.label}</span></NavLink>;
-    })}
-  </nav>
-);
+const NavLinks = ({ collapsed = false, onNavigate, role }: NavLinksProps) => {
+  const { t } = useTranslation();
+  return (
+    <nav aria-label="Main navigation" className="space-y-1">
+      {navigation.filter((item) => !item.roles || item.roles.includes(role)).map((item) => {
+        const Icon = item.icon;
+        const displayLabel = item.labelKey ? t(item.labelKey) : item.label;
+        return <NavLink end={item.to === "/"} key={item.to} onClick={onNavigate} to={item.to} className={({ isActive }) => cn("group flex min-h-11 items-center gap-3 rounded-[0.625rem] px-3 text-sm font-medium transition-[background-color,color,box-shadow] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70", isActive ? "bg-[var(--nav-active)] text-[var(--on-ink)] shadow-[inset_0_0_0_1px_oklch(1_0_0/0.08)]" : "text-[var(--on-ink-muted)] hover:bg-white/[0.07] hover:text-[var(--on-ink)]", collapsed && "justify-center px-0")} title={collapsed ? displayLabel : undefined}><Icon size={18} strokeWidth={1.8} className="shrink-0" /><span className={cn("truncate", collapsed && "sr-only")}>{displayLabel}</span></NavLink>;
+      })}
+    </nav>
+  );
+};
 
 export const AppShell = () => {
   const { logout, user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -154,7 +162,10 @@ export const AppShell = () => {
               placeholder="Search inventory..." 
             />
           </div>
-          <details className="relative"><summary className="flex min-h-10 cursor-pointer list-none items-center gap-2 rounded-[0.625rem] px-2 text-sm font-semibold text-[var(--ink)] outline-none transition-[background-color] duration-150 hover:bg-[var(--surface)] focus-visible:ring-2 focus-visible:ring-[var(--olive)]"><span className="grid size-8 place-items-center rounded-full bg-[var(--olive-soft)] text-[var(--olive-strong)]"><UserRound size={15} /></span><span className="hidden sm:inline">{user?.full_name}</span></summary><div className="absolute right-0 mt-2 w-48 rounded-xl bg-[var(--surface)] p-1.5 shadow-[var(--shadow-elevated)]"><p className="px-3 py-2 text-xs capitalize text-[var(--muted)]">{user?.role}</p><Button className="w-full justify-start hover:bg-[var(--coral-soft)] hover:text-[var(--coral-strong)]" variant="quiet" onClick={onLogout}><LogOut size={16} />Sign out</Button></div></details>
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+            <details className="relative"><summary className="flex min-h-10 cursor-pointer list-none items-center gap-2 rounded-[0.625rem] px-2 text-sm font-semibold text-[var(--ink)] outline-none transition-[background-color] duration-150 hover:bg-[var(--surface)] focus-visible:ring-2 focus-visible:ring-[var(--olive)]"><span className="grid size-8 place-items-center rounded-full bg-[var(--olive-soft)] text-[var(--olive-strong)]"><UserRound size={15} /></span><span className="hidden sm:inline">{user?.full_name}</span></summary><div className="absolute right-0 mt-2 w-48 rounded-xl bg-[var(--surface)] p-1.5 shadow-[var(--shadow-elevated)]"><p className="px-3 py-2 text-xs capitalize text-[var(--muted)]">{user?.role}</p><Button className="w-full justify-start hover:bg-[var(--coral-soft)] hover:text-[var(--coral-strong)]" variant="quiet" onClick={onLogout}><LogOut size={16} />{t("auth.signOut")}</Button></div></details>
+          </div>
         </header>
         <main className="app-canvas min-h-[calc(100vh-4rem)] px-4 py-6 sm:px-6 sm:py-7 lg:px-8"><div className="mx-auto max-w-[88rem]"><Outlet /></div></main>
       </div>
