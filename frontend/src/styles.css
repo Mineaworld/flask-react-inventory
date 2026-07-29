@@ -1,0 +1,142 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ink: oklch(0.235 0.024 151);
+    --ink-soft: oklch(0.315 0.027 151);
+    --on-ink: oklch(0.975 0.006 95);
+    --on-ink-muted: oklch(0.79 0.018 145);
+    --on-ink-subtle: oklch(0.7 0.018 145);
+    --nav-active: oklch(0.34 0.045 148);
+    --overlay: oklch(0.18 0.025 151 / 0.48);
+    --canvas: oklch(0.972 0.008 92);
+    --canvas-deep: oklch(0.943 0.012 99);
+    --surface: oklch(0.995 0.003 95);
+    --surface-glass: oklch(0.982 0.006 95 / 0.9);
+    --line: oklch(0.885 0.014 105);
+    --line-strong: oklch(0.815 0.018 108);
+    --muted: oklch(0.485 0.021 153);
+    --muted-soft: oklch(0.565 0.018 153);
+    --olive: oklch(0.515 0.09 145);
+    --olive-strong: oklch(0.395 0.075 145);
+    --olive-soft: oklch(0.93 0.033 143);
+    --teal: oklch(0.49 0.095 180);
+    --teal-soft: oklch(0.94 0.035 180);
+    --amber: oklch(0.63 0.12 78);
+    --amber-strong: oklch(0.455 0.09 72);
+    --amber-soft: oklch(0.955 0.045 82);
+    --coral: oklch(0.56 0.15 27);
+    --coral-strong: oklch(0.43 0.125 27);
+    --coral-soft: oklch(0.945 0.04 27);
+    --shadow-border:
+      0 0 0 1px oklch(0 0 0 / 0.055),
+      0 1px 2px -1px oklch(0 0 0 / 0.07),
+      0 3px 8px -3px oklch(0 0 0 / 0.055);
+    --shadow-border-hover:
+      0 0 0 1px oklch(0 0 0 / 0.08),
+      0 2px 4px -2px oklch(0 0 0 / 0.08),
+      0 8px 18px -8px oklch(0 0 0 / 0.09);
+    --shadow-elevated:
+      0 0 0 1px oklch(0 0 0 / 0.06),
+      0 18px 50px -22px oklch(0.19 0.02 151 / 0.3);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-synthesis: none;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * { border-color: var(--line); }
+  html { overflow-x: clip; background: var(--canvas); }
+  body { margin: 0; min-width: 320px; min-height: 100vh; overflow-x: hidden; background: var(--canvas); line-height: 1.5; }
+  button, input, select, textarea { font: inherit; }
+  button, summary { user-select: none; }
+  a { text-underline-position: from-font; text-decoration-thickness: from-font; }
+  ::placeholder { color: var(--muted-soft); opacity: 1; }
+  ::selection { background: var(--olive); color: oklch(0.99 0 0); }
+}
+
+@layer utilities {
+  .font-display { font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif; }
+  .app-canvas {
+    background-color: var(--canvas);
+    background-image:
+      radial-gradient(circle at 8% 0%, oklch(0.94 0.03 143 / 0.72), transparent 27rem),
+      linear-gradient(180deg, oklch(0.99 0.004 95 / 0.88), transparent 22rem);
+  }
+  .dot-canvas {
+    background-color: var(--canvas);
+    background-image:
+      radial-gradient(circle at 12% 4%, oklch(0.92 0.035 143 / 0.68), transparent 26rem),
+      linear-gradient(145deg, transparent 42%, oklch(0.94 0.015 95 / 0.62));
+  }
+  .surface-panel {
+    border-radius: 1rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-border);
+  }
+  .surface-toolbar {
+    background: oklch(0.982 0.006 95);
+    border-bottom: 1px solid var(--line);
+  }
+  .surface-panel tbody tr {
+    transition-property: background-color;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out;
+  }
+  .surface-panel tbody tr:hover { background: oklch(0.975 0.008 95); }
+  .form-control {
+    min-height: 2.75rem;
+    width: 100%;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.625rem;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 1rem;
+    outline: none;
+    transition-property: border-color, box-shadow;
+    transition-duration: 150ms;
+  }
+  .form-control:focus {
+    border-color: var(--olive);
+    box-shadow: 0 0 0 4px var(--olive-soft);
+  }
+  @media (min-width: 640px) {
+    .form-control { font-size: 0.875rem; }
+  }
+  .page-title {
+    color: var(--ink);
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.75rem, 2vw, 2.125rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  .page-copy {
+    max-width: 42rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+  .data-row {
+    transition-property: background-color;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out;
+  }
+  .data-row:hover { background: oklch(0.975 0.008 95); }
+  .compact-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+}

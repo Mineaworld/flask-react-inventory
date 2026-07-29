@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment and secrets
+.env
+backend/.env
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Frontend dependencies and generated build
+frontend/node_modules/
+frontend/dist/
+
+# Logs and local tooling
+*.log
+.idea/
+.vscode/
+*.code-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# System generated and output
+.kimchi/
+output/
+docs/
