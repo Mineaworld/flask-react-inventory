@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { DropdownMenu } from "./dropdown-menu";
+import { Select } from "./Select";
+import "flag-icons/css/flag-icons.min.css"; // Ensure it's imported if not already
 
 export const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
@@ -12,27 +13,26 @@ export const LanguageSwitcher = () => {
 
   const options = [
     {
+      value: "km",
       label: t("language.km"),
-      onClick: () => handleLanguageChange("km"),
-      Icon: <span className="fi fi-kh text-lg" />,
+      icon: <span className="fi fi-kh text-lg rounded-sm overflow-hidden" />,
     },
     {
+      value: "en",
       label: t("language.en"),
-      onClick: () => handleLanguageChange("en"),
-      Icon: <span className="fi fi-us text-lg" />,
+      icon: <span className="fi fi-us text-lg rounded-sm overflow-hidden" />,
     },
   ];
 
   return (
-    <DropdownMenu options={options}>
-      <div className="flex items-center gap-2 font-medium">
-        <span
-          className={`fi ${currentLang === "en" ? "fi-us" : "fi-kh"} text-lg`}
-        />
-        <span className="hidden sm:inline">
-          {currentLang === "en" ? t("language.en") : t("language.km")}
-        </span>
-      </div>
-    </DropdownMenu>
+    <div className="w-36">
+      <Select
+        value={currentLang}
+        onChange={handleLanguageChange}
+        options={options}
+        aria-label="Select language"
+      />
+    </div>
   );
 };
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "./shadcn-button";
 import { ChevronDown } from "lucide-react";
@@ -42,8 +42,9 @@ const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
   return (
     <div className="relative inline-block text-left" ref={menuRef}>
       <Button
+        variant="secondary"
         onClick={toggleDropdown}
-        className="px-4 py-2 bg-[#11111198] hover:bg-[#111111d1] shadow-[0_0_20px_rgba(0,0,0,0.2)] border-none rounded-xl backdrop-blur-sm"
+        className="px-4 py-2 rounded-xl"
       >
         {children ?? "Menu"}
         <>
@@ -64,7 +65,7 @@ const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
             animate={{ y: 0, scale: 1, filter: "blur(0px)", opacity: 1 }}
             exit={{ y: -5, scale: 0.95, opacity: 0, filter: "blur(10px)" }}
             transition={{ duration: 0.6, ease: "circInOut", type: "spring" }}
-            className="absolute right-0 z-50 w-48 mt-2 p-1 bg-[#11111198] rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] backdrop-blur-sm flex flex-col gap-2"
+            className="absolute right-0 z-50 w-48 mt-2 p-1.5 bg-[var(--surface)] border border-[var(--line)] rounded-xl shadow-[var(--shadow-elevated)] flex flex-col gap-1"
           >
             {options && options.length > 0 ? (
               options.map((option, index) => (
@@ -88,13 +89,6 @@ const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
                     ease: "easeInOut",
                     type: "spring",
                   }}
-                  whileHover={{
-                    backgroundColor: "#11111140",
-                    transition: {
-                      duration: 0.4,
-                      ease: "easeInOut",
-                    },
-                  }}
                   whileTap={{
                     scale: 0.95,
                     transition: {
@@ -107,14 +101,14 @@ const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
                     option.onClick();
                     setIsOpen(false);
                   }}
-                  className="px-2 py-3 cursor-pointer text-white text-sm rounded-lg w-full text-left flex items-center gap-x-2"
+                  className="px-3 py-2 cursor-pointer text-[var(--muted)] text-sm rounded-lg w-full text-left flex items-center gap-x-2 transition-colors hover:bg-[var(--canvas)] hover:text-[var(--ink)]"
                 >
                   {option.Icon}
                   {option.label}
                 </motion.button>
               ))
             ) : (
-              <div className="px-4 py-2 text-white text-xs">No options</div>
+              <div className="px-4 py-2 text-[var(--muted)] text-sm">No options</div>
             )}
           </motion.div>
         )}

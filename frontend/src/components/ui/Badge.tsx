@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+﻿import type { HTMLAttributes } from "react";
 
 import { cn } from "../../lib/cn";
 
@@ -15,5 +15,5 @@ export const Badge = ({ className, tone = "neutral", ...props }: BadgeProps) => 
     olive: "bg-[var(--olive-soft)] text-[var(--olive-strong)]",
   } as const;
 
-  return <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold leading-none", tones[tone], className)} {...props} />;
+  return <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-semibold leading-none", tones[tone], className)} {...props} />;
 };

@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef } from "react";
+﻿import type { ComponentPropsWithRef } from "react";
 
 import { cn } from "../../lib/cn";
 
@@ -16,7 +16,7 @@ export const Button = ({ className, variant = "primary", size = "default", type 
   } as const;
   const sizes = {
     default: "min-h-11 px-4 text-sm",
-    small: "min-h-11 px-3 text-xs sm:min-h-10",
+    small: "min-h-11 px-3 text-sm sm:min-h-10",
     icon: "size-11 p-0",
   } as const;
 

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../lib/cn";
+import { useTranslation } from "react-i18next";
 
 export type ActionMenuItem = {
   icon?: ReactNode;
@@ -18,6 +19,7 @@ type ActionMenuProps = {
 };
 
 export const ActionMenu = ({ items, triggerLabel }: ActionMenuProps) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -126,7 +128,7 @@ export const ActionMenu = ({ items, triggerLabel }: ActionMenuProps) => {
                   </motion.button>
                 ))
               ) : (
-                <div className="px-4 py-2 text-[var(--muted)] text-xs">No options</div>
+                <div className="px-4 py-2 text-[var(--muted)] text-sm">{t("common.no_options")}</div>
               )}
             </motion.div>
           )}
