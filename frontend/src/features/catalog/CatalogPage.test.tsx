@@ -81,7 +81,7 @@ describe("CatalogPage", () => {
     expect(await screen.findByText("Pilot Pen")).toBeInTheDocument();
     expect(screen.getByText("$1.25")).toBeInTheDocument();
     expect(screen.getByText("8")).toBeInTheDocument();
-    expect(screen.getByText("1-10 of 11 products")).toBeInTheDocument();
+    expect(screen.getByText("1-10 of 11 Products")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next page" }));
     await waitFor(() => expect(apiClient.getPage).toHaveBeenCalledWith(expect.stringContaining("/products?page=2")));
     await user.clear(screen.getByRole("searchbox", { name: "Search products" }));
@@ -117,23 +117,24 @@ describe("CatalogPage", () => {
     await screen.findByText("Pilot Pen");
     await user.click(screen.getByRole("button", { name: "Next page" }));
     await waitFor(() => expect(apiClient.getPage).toHaveBeenCalledWith(expect.stringContaining("/products?page=2")));
-    await user.selectOptions(screen.getByLabelText("Filter product status"), "archived");
+    await user.click(screen.getByLabelText("Filter Products status"));
+    await user.click(screen.getByRole("button", { name: "Archived" }));
 
     await waitFor(() => expect(vi.mocked(apiClient.getPage).mock.calls.some(([path]) => String(path).startsWith("/products?page=1") && String(path).includes("status=archived"))).toBe(true));
     expect(await screen.findByText("Retired Pen")).toBeInTheDocument();
-    expect(screen.getByText("1-1 of 1 products")).toBeInTheDocument();
+    expect(screen.getByText("1-1 of 1 Products")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Categories" }));
     await screen.findByText("Office essentials");
     expect(screen.queryByText("Product count")).not.toBeInTheDocument();
     expect(screen.queryByText("Not available from API")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next page" }));
-    await waitFor(() => expect(apiClient.getPage).toHaveBeenCalledWith(expect.stringContaining("/categories?page=2")));
-    await user.selectOptions(screen.getByLabelText("Filter category status"), "archived");
+    await user.click(screen.getByLabelText("Filter Categories status"));
+    await user.click(screen.getByRole("button", { name: "Archived" }));
 
     await waitFor(() => expect(vi.mocked(apiClient.getPage).mock.calls.some(([path]) => String(path).startsWith("/categories?page=1") && String(path).includes("status=archived"))).toBe(true));
     expect(await screen.findByText("Retired office supplies")).toBeInTheDocument();
-    expect(screen.getByText("1-1 of 1 categories")).toBeInTheDocument();
+    expect(screen.getByText("1-1 of 1 Categories")).toBeInTheDocument();
   });
 
   it("submits a manager product form and refreshes the product query", async () => {
@@ -151,7 +152,8 @@ describe("CatalogPage", () => {
     await user.click(screen.getByRole("button", { name: "New product" }));
     await user.type(screen.getByLabelText("Product name"), "Desk Lamp");
     await user.type(screen.getByLabelText("SKU"), "LAMP-001");
-    await user.selectOptions(screen.getByLabelText("Category"), "2");
+    await user.click(screen.getByLabelText("Category"));
+    await user.click(screen.getByRole("button", { name: "Office" }));
     await user.type(screen.getByLabelText("Unit"), "each");
     await user.type(screen.getByLabelText("Reorder level"), "3");
     await user.type(screen.getByLabelText("Default cost (USD)"), "10");

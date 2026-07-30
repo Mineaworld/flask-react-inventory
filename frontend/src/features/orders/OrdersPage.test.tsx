@@ -153,11 +153,13 @@ describe("PurchasePage", () => {
     renderPage(<PurchasePage role="manager" />);
 
     await screen.findByText("PUR-000011");
-    await user.click(screen.getByRole("button", { name: "New purchase" }));
-    const dialog = screen.getByRole("dialog", { name: "New purchase" });
+    await user.click(screen.getByRole("button", { name: "New Purchase" }));
+    const dialog = screen.getByRole("dialog", { name: "New Purchase" });
 
-    expect(await within(dialog).findByRole("option", { name: "Later Supplier" })).toBeInTheDocument();
-    expect(await within(dialog).findByRole("option", { name: "Later Product (LATE-107)" })).toBeInTheDocument();
+    await user.click(within(dialog).getByText(/Select a supplier/i));
+    expect(await within(dialog).findByText(/Later Supplier/i)).toBeInTheDocument();
+    await user.click(within(dialog).getAllByText(/Select a product/i)[0]);
+    expect(await within(dialog).findByText(/Later Product/i)).toBeInTheDocument();
     expect(vi.mocked(apiClient.getPage).mock.calls.some(([path]) => String(path).includes("/products") && String(path).includes("page=2"))).toBe(true);
     expect(vi.mocked(apiClient.getPage).mock.calls.some(([path]) => String(path).includes("/suppliers") && String(path).includes("page=2"))).toBe(true);
   });
@@ -175,12 +177,10 @@ describe("PurchasePage", () => {
     await screen.findByText("PUR-000011");
     await user.click(screen.getByRole("button", { name: "More actions for PUR-000011" }));
     await user.click(screen.getByRole("menuitem", { name: "Edit" }));
-    const dialog = screen.getByRole("dialog", { name: "Edit purchase" });
+    const dialog = screen.getByRole("dialog", { name: "Edit Purchase" });
 
-    expect(within(dialog).getByLabelText("Supplier")).toHaveValue("3");
-    expect(within(dialog).getByRole("option", { name: "Paper House" })).toBeInTheDocument();
-    expect(within(dialog).getByLabelText("Product 1")).toHaveValue("7");
-    expect(within(dialog).getByRole("option", { name: "Pilot Pen (current)" })).toBeInTheDocument();
+    expect(within(dialog).getByText(/Paper House/i)).toBeInTheDocument();
+    expect(within(dialog).getAllByText(/Pilot Pen/i)[0]).toBeInTheDocument();
   });
 
   it("lets a Manager create a KHR purchase and receive the returned draft", async () => {
@@ -199,13 +199,16 @@ describe("PurchasePage", () => {
     const { invalidate } = renderPage(<PurchasePage role="manager" />);
 
     expect(await screen.findByText("PUR-000011")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "New purchase" }));
-    const formDialog = screen.getByRole("dialog", { name: "New purchase" });
-    await user.selectOptions(within(formDialog).getByLabelText("Supplier"), "3");
-    await user.selectOptions(within(formDialog).getByLabelText("Currency"), "KHR");
+    await user.click(screen.getByRole("button", { name: "New Purchase" }));
+    const formDialog = screen.getByRole("dialog", { name: "New Purchase" });
+    await user.click(within(formDialog).getByLabelText("Supplier"));
+    await user.click(within(formDialog).getByRole("button", { name: "Paper House" }));
+    await user.click(within(formDialog).getByLabelText("Currency"));
+    await user.click(within(formDialog).getByRole("button", { name: "KHR" }));
     await user.clear(within(formDialog).getByLabelText("Exchange rate to USD"));
     await user.type(within(formDialog).getByLabelText("Exchange rate to USD"), "4100");
-    await user.selectOptions(within(formDialog).getByLabelText("Product 1"), "7");
+    await user.click(within(formDialog).getByLabelText("Product 1"));
+    await user.click(within(formDialog).getByRole("button", { name: "Pilot Pen (PEN-001)" }));
     await user.type(within(formDialog).getByLabelText("Quantity 1"), "2");
     await user.type(within(formDialog).getByLabelText("Unit cost 1"), "41000");
     await waitFor(() => expect(within(formDialog).getByText("Estimated USD total").parentElement).toHaveTextContent("$20.00"));
@@ -274,10 +277,11 @@ describe("SalesPage", () => {
     renderPage(<SalesPage role="staff" />);
 
     await screen.findByText("SAL-000012");
-    await user.click(screen.getByRole("button", { name: "New sale" }));
-    const dialog = screen.getByRole("dialog", { name: "New sale" });
+    await user.click(screen.getByRole("button", { name: "New Sale" }));
+    const dialog = screen.getByRole("dialog", { name: "New Sale" });
 
-    expect(await within(dialog).findByRole("option", { name: "Later Customer" })).toBeInTheDocument();
+    await user.click(within(dialog).getByLabelText("Customer"));
+    expect(await within(dialog).findByRole("button", { name: "Later Customer" })).toBeInTheDocument();
     const customerCalls = vi.mocked(apiClient.getPage).mock.calls.map(([path]) => String(path)).filter((path) => path.startsWith("/customers"));
     expect(customerCalls.some((path) => path.includes("page=2"))).toBe(true);
     expect(customerCalls.every((path) => path.includes("for_sale=true"))).toBe(true);
@@ -298,11 +302,13 @@ describe("SalesPage", () => {
     expect(await screen.findByText("SAL-000012")).toBeInTheDocument();
     expect(apiClient.getPage).toHaveBeenCalledWith(expect.stringContaining("/sales?"));
     expect(screen.queryByRole("menuitem", { name: "Complete" })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "New sale" }));
-    const formDialog = screen.getByRole("dialog", { name: "New sale" });
+    await user.click(screen.getByRole("button", { name: "New Sale" }));
+    const formDialog = screen.getByRole("dialog", { name: "New Sale" });
     await waitFor(() => expect(apiClient.getPage).toHaveBeenCalledWith(expect.stringContaining("/customers?for_sale=true")));
-    await user.selectOptions(within(formDialog).getByLabelText("Customer"), "4");
-    await user.selectOptions(within(formDialog).getByLabelText("Product 1"), "7");
+    await user.click(within(formDialog).getByLabelText("Customer"));
+    await user.click(within(formDialog).getByRole("button", { name: "Campus Store" }));
+    await user.click(within(formDialog).getByLabelText("Product 1"));
+    await user.click(within(formDialog).getByRole("button", { name: "Pilot Pen (PEN-001)" }));
     await user.type(within(formDialog).getByLabelText("Quantity 1"), "1");
     await user.type(within(formDialog).getByLabelText("Unit price 1"), "3.50");
     await user.click(within(formDialog).getByRole("button", { name: "Create sale" }));

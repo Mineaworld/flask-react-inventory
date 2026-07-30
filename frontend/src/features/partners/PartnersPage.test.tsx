@@ -42,7 +42,8 @@ describe("PartnersPage", () => {
 
     render(<QueryClientProvider client={queryClient}><PartnersPage role="staff" /></QueryClientProvider>);
     await screen.findByText("Walk-in customer");
-    await user.selectOptions(screen.getByLabelText("Rows per page for customers"), "25");
+    await user.click(screen.getByLabelText("Rows per page for customers"));
+    await user.click(screen.getByRole("button", { name: "25" }));
 
     await waitFor(() => expect(vi.mocked(apiClient.getPage).mock.calls.some(([path]) => String(path).includes("page=1") && String(path).includes("per_page=25") && String(path).includes("for_sale=true"))).toBe(true));
   });

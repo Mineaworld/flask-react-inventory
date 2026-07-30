@@ -58,9 +58,11 @@ describe("InventoryPage", () => {
 
     renderPage();
     await screen.findByText("Pilot Pen");
-    await user.click(screen.getByRole("button", { name: "Adjust stock" }));
-    await user.selectOptions(screen.getByLabelText("Product"), "7");
-    await user.selectOptions(screen.getByLabelText("Direction"), "in");
+    await user.click(screen.getByRole("button", { name: "Adjust Stock" }));
+    await user.click(screen.getByLabelText("Product"));
+    await user.click(screen.getByRole("button", { name: "Pilot Pen (PEN-001)" }));
+    await user.click(screen.getByLabelText("Direction"));
+    await user.click(screen.getByRole("button", { name: "Increase stock" }));
     await user.type(screen.getByLabelText("Quantity"), "5");
     await user.type(screen.getByLabelText("Reason"), "Count correction");
     await user.click(screen.getByRole("button", { name: "Save adjustment" }));

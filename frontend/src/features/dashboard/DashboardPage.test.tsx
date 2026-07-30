@@ -30,7 +30,7 @@ describe("DashboardPage", () => {
     expect(screen.getByText("0")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.queryByText("Stock value")).not.toBeInTheDocument();
-    expect(screen.queryByRole("img", { name: /sales and purchases trend/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("figure", { name: /Sales and purchases trend/i })).not.toBeInTheDocument();
   });
 
   it("renders manager totals and refetches the activity trend for a selected range", async () => {
@@ -57,7 +57,7 @@ describe("DashboardPage", () => {
 
     expect(await screen.findByText("Stock value")).toBeInTheDocument();
     expect(screen.getByText("$125.50")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: /sales and purchases trend/i })).toBeInTheDocument();
+    expect(screen.getByRole("figure", { name: /Sales and purchases trend/i })).toBeInTheDocument();
     expect(apiClient.get).toHaveBeenCalledWith("/dashboard?range=month");
 
     await user.click(screen.getByRole("button", { name: "Week" }));
