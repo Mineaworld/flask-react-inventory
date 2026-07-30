@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { Select } from "../../components/ui/Select";
 import { apiClient } from "../../lib/api";
 import { formatCurrency } from "../../lib/format";
 import { fetchAllPagesById } from "../../lib/pagination";
@@ -62,7 +63,7 @@ const Field = ({ children, error, label }: { children: ReactNode; error?: string
   <label className="grid gap-1.5 text-sm font-semibold text-[var(--ink)]">
     <span>{label}</span>
     {children}
-    {error ? <span className="text-xs font-medium text-[var(--coral-strong)]">{error}</span> : null}
+    {error ? <span className="text-sm font-medium text-[var(--coral-strong)]">{error}</span> : null}
   </label>
 );
 
@@ -209,16 +210,10 @@ export const OrderForm = ({ kind, onClose, order, role }: OrderFormProps) => {
       {serverError ? <p className="rounded-xl bg-[var(--coral-soft)] p-3 text-sm text-[var(--coral-strong)]" role="alert">{serverError}</p> : null}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={partnerLabel} error={rootFieldError("partner_id")}>
-          <select aria-label={partnerLabel} aria-invalid={Boolean(rootFieldError("partner_id"))} className="form-control px-3" {...form.register("partner_id")}>
-            <option value="">{kind === "purchase" ? "Select a supplier" : "Walk-in / no customer"}</option>
-            {partners.map((partner) => <option key={partner.id} value={partner.id}>{partner.name}</option>)}
-          </select>
+          <Controller name="partner_id" control={form.control} render={({ field }) => <Select value={field.value} onChange={field.onChange} hasError={Boolean(rootFieldError("partner_id"))} placeholder={kind === "purchase" ? "Select a supplier" : "Walk-in / no customer"} options={[{ value: "", label: kind === "purchase" ? "Select a supplier" : "Walk-in / no customer" }, ...partners.map(p => ({ value: String(p.id), label: p.name }))]} />} />
         </Field>
         <Field label="Currency" error={form.formState.errors.currency?.message}>
-          <select aria-label="Currency" className="form-control px-3" {...form.register("currency")}>
-            <option value="USD">USD</option>
-            <option value="KHR">KHR</option>
-          </select>
+          <Controller name="currency" control={form.control} render={({ field }) => <Select value={field.value} onChange={field.onChange} hasError={Boolean(form.formState.errors.currency?.message)} options={[{ value: "USD", label: "USD" }, { value: "KHR", label: "KHR" }]} />} />
         </Field>
       </div>
       <Field label="Exchange rate to USD" error={rootFieldError("exchange_rate_to_usd")}>
@@ -234,10 +229,7 @@ export const OrderForm = ({ kind, onClose, order, role }: OrderFormProps) => {
             <section className="rounded-xl bg-[var(--canvas)] p-3 shadow-[inset_0_0_0_1px_var(--line)]" key={line.id}>
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_auto] sm:items-end">
                 <Field label={`Product ${index + 1}`} error={productError}>
-                  <select aria-label={`Product ${index + 1}`} aria-invalid={Boolean(productError)} className="form-control px-3" {...form.register(`items.${index}.product_id`)}>
-                    <option value="">Select a product</option>
-                    {products.map((product) => <option key={product.id} value={product.id}>{product.name} ({product.sku || "current"})</option>)}
-                  </select>
+                  <Controller name={`items.${index}.product_id`} control={form.control} render={({ field }) => <Select value={field.value} onChange={field.onChange} hasError={Boolean(productError)} placeholder="Select a product" options={[{ value: "", label: "Select a product" }, ...products.map(p => ({ value: String(p.id), label: `${p.name} (${p.sku || "current"})` }))]} />} />
                 </Field>
                 <Field label={`Quantity ${index + 1}`} error={quantityError}><Input aria-label={`Quantity ${index + 1}`} aria-invalid={Boolean(quantityError)} inputMode="decimal" {...form.register(`items.${index}.quantity`)} /></Field>
                 <Field label={`${unitLabel} ${index + 1}`} error={amountError}><Input aria-label={`${unitLabel} ${index + 1}`} aria-invalid={Boolean(amountError)} inputMode="decimal" {...form.register(`items.${index}.unit_amount`)} /></Field>
@@ -246,13 +238,13 @@ export const OrderForm = ({ kind, onClose, order, role }: OrderFormProps) => {
             </section>
           );
         })}
-        {typeof form.formState.errors.items?.message === "string" ? <p className="text-xs font-medium text-[var(--coral-strong)]">{form.formState.errors.items.message}</p> : null}
+        {typeof form.formState.errors.items?.message === "string" ? <p className="text-sm font-medium text-[var(--coral-strong)]">{form.formState.errors.items.message}</p> : null}
       </div>
       <Field label="Notes"><textarea aria-label="Notes" className="form-control min-h-20 p-3" {...form.register("notes")} /></Field>
       <div className="rounded-xl bg-[var(--canvas)] p-4 text-sm shadow-[inset_0_0_0_1px_var(--line)]">
         <div className="flex flex-wrap justify-between gap-2"><span className="text-[var(--muted)]">Estimated document total</span><strong className="tabular-nums text-[var(--ink)]">{formatCurrency(estimates.amount, currency)}</strong></div>
         <div className="mt-2 flex flex-wrap justify-between gap-2"><span className="text-[var(--muted)]">Estimated USD total</span><strong className="tabular-nums text-[var(--olive-strong)]">{formatCurrency(estimates.usd, "USD")}</strong></div>
-        <p className="mt-2 text-xs text-[var(--muted)]">Final totals lock when saved.</p>
+        <p className="mt-2 text-sm text-[var(--muted)]">Final totals lock when saved.</p>
       </div>
       <div className="flex justify-end gap-3"><Button disabled={mutation.isPending} variant="secondary" onClick={onClose}>Cancel</Button><Button disabled={mutation.isPending || productsQuery.isPending || partnersQuery.isPending} type="submit">{mutation.isPending ? "Saving..." : `${order ? "Save" : "Create"} ${documentLabel}`}</Button></div>
     </form>
