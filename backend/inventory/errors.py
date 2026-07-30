@@ -7,6 +7,7 @@ from typing import Any
 from flask import Flask, Response, jsonify
 from flask_limiter.errors import RateLimitExceeded
 from flask_wtf.csrf import CSRFError
+from sqlalchemy.exc import OperationalError
 from werkzeug.exceptions import HTTPException
 
 from inventory.api_helpers import ApiProblem
@@ -54,3 +55,8 @@ def register_error_handlers(app: Flask) -> None:
             raise error
         app.logger.exception("Unhandled inventory API error", exc_info=error)
         return error_response("internal_error", "An unexpected server error occurred.", 500)
+
+    @app.errorhandler(OperationalError)
+    def handle_database_connection_error(error: OperationalError) -> tuple[Response, int]:
+        app.logger.error(f"Database connection failed: {error}")
+        return error_response("database_unavailable", "The database is currently unavailable. Please check if the database server is running.", 503)

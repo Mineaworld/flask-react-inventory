@@ -68,6 +68,10 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     @app.before_request
     def clear_inactive_session() -> None:
         """Invalidate a revoked account before Flask-Login serves the request."""
+        from flask import request
+        if not request.path.startswith("/api/"):
+            return
+            
         user_id = session.get("_user_id")
         if user_id is not None:
             load_user(str(user_id))
