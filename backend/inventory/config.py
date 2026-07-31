@@ -1,19 +1,16 @@
-"""Application configuration with a deliberate MySQL-only runtime policy."""
-
 from __future__ import annotations
 
 import os
 from typing import Any
 
-
+# app config base
 class BaseConfig:
-    """Settings shared by runtime and tests."""
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
     RATELIMIT_STORAGE_URI = "memory://"
     RATELIMIT_DEFAULT: list[str] = []
-    # Flask-WTF passes this value directly to itsdangerous, which expects seconds.
+    # pass wtf value without break
     WTF_CSRF_TIME_LIMIT = 60 * 60
     JSON_SORT_KEYS = False
 
@@ -35,16 +32,16 @@ def _mysql_database_url() -> str:
     return database_url
 
 
+# setup local dev conf
 class DevelopmentConfig(BaseConfig):
-    """Local development keeps safe defaults while requiring the MySQL application database."""
 
     def __init__(self) -> None:
         super().__init__()
         self.SQLALCHEMY_DATABASE_URI = _mysql_database_url()
 
 
+# production run limit
 class ProductionConfig(BaseConfig):
-    """Runtime configuration that rejects unsafe secrets and volatile rate limiting."""
 
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
@@ -68,8 +65,8 @@ class ProductionConfig(BaseConfig):
         self.RATELIMIT_STORAGE_URI = rate_limit_storage_uri
 
 
+# testing env config
 class TestConfig(BaseConfig):
-    """Tests can run without a MySQL server while still accepting a dedicated test URL."""
 
     __test__ = False
     TESTING = True

@@ -1,5 +1,4 @@
-"""Transactional inventory workflows kept separate from HTTP route handling."""
-
+# inventory services
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
@@ -62,8 +61,8 @@ def _cambodia_date(value: datetime) -> date:
     return _utc_datetime(value).astimezone(CAMBODIA_TIME_ZONE).date()
 
 
+# commit to db
 def _commit() -> None:
-    """Commit one workflow and convert database validation into a public error."""
     try:
         db.session.commit()
     except IntegrityError as error:
@@ -79,7 +78,6 @@ def _get(model: type[Model], entity_id: int, label: str) -> Model:
 
 
 def _get_active(model: type[Model], entity_id: int, label: str, field: str) -> Model:
-    """Resolve a master-data record that can still be used in a new document."""
     entity = _get(model, entity_id, label)
     if not getattr(entity, "is_active", True):
         raise ApiProblem(
@@ -125,7 +123,6 @@ def _column_decimal(
     positive: bool = False,
     nonnegative: bool = False,
 ) -> Decimal:
-    """Validate a client value against the precision and scale of its model column."""
     return decimal_value(
         value,
         field,
@@ -137,7 +134,6 @@ def _column_decimal(
 
 
 def _calculated_decimal(value: Decimal, field: str, column: Any) -> Decimal:
-    """Round a derived amount once, then prove it still fits the destination column."""
     maximum_integer_digits = column.precision - column.scale
     if not value.is_finite() or value < 0 or (value and value.adjusted() + 1 > maximum_integer_digits):
         raise ApiProblem(
@@ -146,7 +142,6 @@ def _calculated_decimal(value: Decimal, field: str, column: Any) -> Decimal:
             fields={field: f"Must fit DECIMAL({column.precision}, {column.scale})."},
         )
     try:
-        # Derived multiplication can exceed Python's default Decimal precision before storage validation.
         with localcontext() as context:
             context.prec = max(64, value.adjusted() + 1 + column.scale + 1 if value else column.scale + 1)
             rounded = value.quantize(Decimal(1).scaleb(-column.scale), rounding=ROUND_HALF_UP)
@@ -160,7 +155,6 @@ def _calculated_decimal(value: Decimal, field: str, column: Any) -> Decimal:
 
 
 def _calculation_precision(*values: Decimal) -> int:
-    """Keep intermediate arithmetic exact for all currently supported DECIMAL columns."""
     return max(64, sum(len(value.as_tuple().digits) for value in values) + 8)
 
 
@@ -187,7 +181,6 @@ def _calculated_total(values: Iterable[Decimal], field: str, column: Any) -> Dec
 
 
 def _quantized_product_total(factors: Iterable[tuple[Decimal, Decimal]], scale: int) -> Decimal:
-    """Sum products exactly enough for an aggregate that is not persisted in a column."""
     pairs = list(factors)
     operands = [value for pair in pairs for value in pair]
     with localcontext() as context:
@@ -250,7 +243,6 @@ def _totals(items: Iterable[PurchaseItem | SaleItem]) -> tuple[Decimal, Decimal]
 
 
 def _recalculate_usd_values(items: Iterable[PurchaseItem | SaleItem], rate: Decimal) -> None:
-    """Keep locked USD values consistent when a draft document rate changes."""
     for item in items:
         item.unit_price_usd = _calculated_quotient(item.unit_price, rate, "items", USD_VALUE)
         item.line_total = _calculated_product(item.quantity, item.unit_price, "items", MONEY)
@@ -356,10 +348,10 @@ def _apply_product(product: Product, payload: Mapping[str, Any], creating: bool)
         setattr(product, key, value)
 
 
+# make product atomic
 def create_product(payload: Mapping[str, Any]) -> Product:
     product = Product()
     _apply_product(product, payload, True)
-    # A product and its zero on-hand balance are one atomic catalog operation.
     product.stock_balance = StockBalance(quantity=Decimal("0"))
     db.session.add(product)
     _commit()
@@ -442,7 +434,6 @@ def create_purchase(payload: Mapping[str, Any], user: User) -> Purchase:
 
 
 def _purchase_lock_statement(purchase_id: int):
-    """Build the single-row locking read used by draft purchase mutations."""
     return (
         select(Purchase)
         .options(selectinload(Purchase.items).selectinload(PurchaseItem.product))
@@ -453,7 +444,6 @@ def _purchase_lock_statement(purchase_id: int):
 
 
 def _sale_lock_statement(sale_id: int):
-    """Build the single-row locking read used by draft sale mutations."""
     return (
         select(Sale)
         .options(selectinload(Sale.items).selectinload(SaleItem.product))
@@ -511,7 +501,6 @@ def update_purchase(purchase: Purchase, payload: Mapping[str, Any]) -> Purchase:
 
 
 def _stock_balance_lock_statement(product_ids: Iterable[int]):
-    """Lock stock balances in a deterministic order for multi-product workflows."""
     ordered_ids = sorted(set(product_ids))
     return (
         select(StockBalance)
@@ -711,8 +700,8 @@ def adjust_stock(payload: Mapping[str, Any], user: User) -> StockMovement:
     return movement
 
 
+# get dashboard data
 def dashboard_data(user: User, *, period_days: int = 30) -> dict[str, Any]:
-    """Build role-appropriate operational metrics from persisted records."""
     balances = db.session.execute(
         select(Product, StockBalance)
         .outerjoin(StockBalance, StockBalance.product_id == Product.id)

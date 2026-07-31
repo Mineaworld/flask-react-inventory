@@ -1,4 +1,4 @@
-"""Shared API validation, serialization, and pagination helpers."""
+# define helper method for api
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from flask import Response, jsonify, request
 
 
 class ApiProblem(Exception):
-    """A safe, deliberate client-facing API failure."""
+    # define api exception class
 
     def __init__(
         self,
@@ -29,7 +29,7 @@ class ApiProblem(Exception):
 
 
 def error_response(problem: ApiProblem) -> tuple[Response, int]:
-    """Serialize a known API problem using the public error envelope."""
+    # format api error response
     error: dict[str, Any] = {"code": problem.code, "message": problem.message}
     if problem.fields:
         error["fields"] = problem.fields
@@ -37,7 +37,7 @@ def error_response(problem: ApiProblem) -> tuple[Response, int]:
 
 
 def json_safe(value: Any) -> Any:
-    """Convert SQLAlchemy values into JSON-safe primitives without float loss."""
+    # serialize db value to json format
     if isinstance(value, Decimal):
         return str(value)
     if isinstance(value, Enum):
@@ -52,12 +52,12 @@ def json_safe(value: Any) -> Any:
 
 
 def data_response(data: Any, status: int = 200) -> tuple[Response, int]:
-    """Return a JSON success envelope."""
+    # format res success json
     return jsonify({"data": json_safe(data)}), status
 
 
 def list_response(items: list[Any], page: int, per_page: int, total: int) -> tuple[Response, int]:
-    """Return a paginated JSON list using the fixed public response shape."""
+    # format pagination response json
     pages = ceil(total / per_page) if total else 0
     return (
         jsonify(
@@ -71,7 +71,7 @@ def list_response(items: list[Any], page: int, per_page: int, total: int) -> tup
 
 
 def request_json() -> dict[str, Any]:
-    """Read a JSON object, rejecting malformed or scalar request bodies."""
+    # parse req body as json
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
         raise ApiProblem("validation_error", "A JSON object is required.")
@@ -79,7 +79,7 @@ def request_json() -> dict[str, Any]:
 
 
 def positive_int(value: Any, field: str) -> int:
-    """Parse a mathematically integral, positive API identifier without truncation."""
+    # parse field as positive integer
     if isinstance(value, bool):
         raise ApiProblem("validation_error", "Request validation failed.", fields={field: "Must be a positive integer."})
     try:
@@ -100,7 +100,7 @@ def decimal_value(
     precision: int | None = None,
     scale: int | None = None,
 ) -> Decimal:
-    """Parse a finite decimal that fits the persisted database column exactly."""
+    # check parse decimal field
     try:
         parsed = Decimal(str(value))
     except (InvalidOperation, TypeError, ValueError):
@@ -130,7 +130,7 @@ def decimal_value(
 
 
 def required_text(payload: Mapping[str, Any], field: str, max_length: int | None = None) -> str:
-    """Read a non-blank string input with a stable field error."""
+    # extract text field from json
     value = payload.get(field)
     if not isinstance(value, str) or not value.strip():
         raise ApiProblem("validation_error", "Request validation failed.", fields={field: "This field is required."})
@@ -141,7 +141,7 @@ def required_text(payload: Mapping[str, Any], field: str, max_length: int | None
 
 
 def optional_text(payload: Mapping[str, Any], field: str, max_length: int | None = None) -> str | None:
-    """Read an optional nullable string input."""
+    # load string option value from object
     if field not in payload or payload[field] is None:
         return None
     value = payload[field]
@@ -154,7 +154,7 @@ def optional_text(payload: Mapping[str, Any], field: str, max_length: int | None
 
 
 def pagination_args() -> tuple[int, int]:
-    """Return bounded pagination parameters shared by all list endpoints."""
+    # load limit offest query params
     try:
         page = int(request.args.get("page", "1"))
         per_page = int(request.args.get("per_page", "10"))
@@ -166,7 +166,7 @@ def pagination_args() -> tuple[int, int]:
 
 
 def sort_args(allowed: Mapping[str, Any], default: str = "id") -> tuple[Any, bool]:
-    """Resolve only fixed model columns, preventing SQL injection via sorting."""
+    # get sort params
     key = request.args.get("sort", default)
     direction = request.args.get("direction", "asc").lower()
     if key not in allowed or direction not in {"asc", "desc"}:
@@ -175,7 +175,7 @@ def sort_args(allowed: Mapping[str, Any], default: str = "id") -> tuple[Any, boo
 
 
 def status_arg() -> bool | None:
-    """Resolve an optional active/archive list filter without exposing raw query values."""
+    # parse status from query
     status = request.args.get("status", "all").lower()
     if status == "all":
         return None

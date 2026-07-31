@@ -1,4 +1,4 @@
-"""Flask CLI commands for preparing a safe, repeatable local demonstration."""
+# define cli tool cmd
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ def _demo_partner(model: type[Supplier] | type[Customer], name: str) -> Supplier
 @click.command("seed-demo")
 @click.option("--password", default="123", show_default=True, metavar="PASSWORD", help="Password for all demo accounts.")
 def seed_demo(password: str) -> None:
-    """Create idempotent, workflow-backed demo data without displaying secrets."""
+    # run demo db seed
     if not password.strip():
         raise click.UsageError("--password must not be blank.")
 

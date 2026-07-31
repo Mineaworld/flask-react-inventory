@@ -1,4 +1,4 @@
-"""Typed persistence models for the inventory domain."""
+# def db models
 
 from __future__ import annotations
 
@@ -22,15 +22,12 @@ EXCHANGE_RATE = Numeric(18, 6)
 
 
 class AppendOnlyLedgerError(RuntimeError):
-    """Raised when persisted stock ledger history is modified or removed."""
+    # error on ledger modify
+    pass
 
 
 class UTCDateTime(TypeDecorator[datetime]):
-    """Store UTC-naive values and always return aware UTC datetimes.
-
-    MySQL ``DATETIME`` has no timezone metadata, so naive inputs are documented
-    as UTC and aware inputs are converted to UTC before they are persisted.
-    """
+    # define timezone type column
 
     impl = DateTime
     cache_ok = True
@@ -51,12 +48,12 @@ class UTCDateTime(TypeDecorator[datetime]):
 
 
 def utc_now() -> datetime:
-    """Return an aware UTC timestamp for application-managed audit fields."""
+    # generate current server time utc
     return datetime.now(timezone.utc)
 
 
 def enum_type(enum_class: type[Enum], name: str, length: int = 32) -> SqlEnum:
-    """Store lower-case enum values consistently on MySQL and SQLite."""
+    # define db enum col
     return SqlEnum(
         enum_class,
         name=name,
@@ -208,7 +205,7 @@ class Customer(TimestampMixin, db.Model):
 
 
 class StockBalance(db.Model):
-    """The current on-hand quantity; movements remain the immutable history."""
+    # track active product count
 
     __tablename__ = "stock_balances"
     __table_args__ = (
@@ -361,7 +358,7 @@ class SaleItem(db.Model):
 
 
 class StockMovement(db.Model):
-    """Append-only ledger rows created alongside any stock-balance update."""
+    # track transaction logs history
 
     __tablename__ = "stock_movements"
     __table_args__ = (
@@ -391,11 +388,11 @@ class StockMovement(db.Model):
 
 @event.listens_for(StockMovement, "before_update")
 def reject_stock_movement_update(*_: object) -> None:
-    """Prevent ORM updates to persisted stock ledger entries."""
+    # throw error block stock update event
     raise AppendOnlyLedgerError("Stock movements are append-only ledger records and cannot be modified.")
 
 
 @event.listens_for(StockMovement, "before_delete")
 def reject_stock_movement_delete(*_: object) -> None:
-    """Prevent ORM deletion of persisted stock ledger entries."""
+    # abort when perform delete movement
     raise AppendOnlyLedgerError("Stock movements are append-only ledger records and cannot be deleted.")

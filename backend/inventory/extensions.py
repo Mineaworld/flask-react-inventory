@@ -1,4 +1,4 @@
-"""Extension instances initialized by the application factory."""
+# setup extension for flask app
 
 from __future__ import annotations
 
@@ -12,7 +12,8 @@ from sqlalchemy.orm import DeclarativeBase
 
 
 class Base(DeclarativeBase):
-    """Shared SQLAlchemy declarative base."""
+    # base class for db model
+    pass
 
 
 db = SQLAlchemy(model_class=Base)

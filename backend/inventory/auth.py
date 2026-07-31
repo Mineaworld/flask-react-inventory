@@ -1,4 +1,4 @@
-"""Authentication endpoints and role guards for API blueprints."""
+# auth endpoints and roles
 
 from __future__ import annotations
 
@@ -21,13 +21,13 @@ R = TypeVar("R")
 
 
 def user_data(user: User) -> dict[str, Any]:
-    """Expose only the non-sensitive fields needed by the frontend."""
+    # serialize user detail
     role = user.role.value if isinstance(user.role, Role) else str(user.role)
     return {"id": user.id, "username": user.username, "full_name": user.full_name, "role": role}
 
 
 def has_role(*roles: Role) -> bool:
-    """Check a current user's role while accepting SQLite test enum coercion."""
+    # check user access role
     if not current_user.is_authenticated:
         return False
     value = current_user.role.value if isinstance(current_user.role, Role) else str(current_user.role)
@@ -35,7 +35,7 @@ def has_role(*roles: Role) -> bool:
 
 
 def roles_required(*roles: Role) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    """Require a logged-in user with one of the explicitly granted roles."""
+    # auth role decorator
     def decorator(view: Callable[P, R]) -> Callable[P, R]:
         @wraps(view)
         @login_required
@@ -50,7 +50,7 @@ def roles_required(*roles: Role) -> Callable[[Callable[P, R]], Callable[P, R]]:
 
 
 def register_auth_routes(api: Blueprint) -> None:
-    """Register session authentication endpoints under the API blueprint."""
+    # map auth routes
 
     @api.get("/auth/csrf")
     def csrf_token():

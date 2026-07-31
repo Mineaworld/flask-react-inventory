@@ -1,5 +1,4 @@
-"""Flask application factory for the inventory API."""
-
+# init flask app
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -19,7 +18,6 @@ from inventory.extensions import csrf, db, limiter, login_manager, migrate
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
-    """Create a configured Flask app without opening a database connection."""
     load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
     app = Flask(__name__)
@@ -43,7 +41,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     csrf.init_app(app)
     limiter.init_app(app)
 
-    # Import models before Flask-Migrate inspects SQLAlchemy metadata.
     from inventory import models  # noqa: F401
 
     from inventory.models import User
@@ -67,7 +64,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     @app.before_request
     def clear_inactive_session() -> None:
-        """Invalidate a revoked account before Flask-Login serves the request."""
         from flask import request
         if not request.path.startswith("/api/"):
             return
@@ -108,10 +104,10 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
         )
         return response
 
+    # serve frontend assets
     @app.get("/", defaults={"frontend_path": ""})
     @app.get("/<path:frontend_path>")
     def serve_frontend(frontend_path: str):
-        """Serve built React assets and fall back to its client-side router."""
         if frontend_path == "api/v1" or frontend_path.startswith("api/v1/"):
             abort(404)
 

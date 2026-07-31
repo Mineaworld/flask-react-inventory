@@ -1,4 +1,4 @@
-"""Consistent JSON error responses for API consumers."""
+# handle api errors
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ def error_response(
     status: int,
     fields: dict[str, str] | None = None,
 ) -> tuple[Response, int]:
-    """Build the API's standard error response envelope."""
+    # format error dict res
     error: dict[str, Any] = {"code": code, "message": message}
     if fields:
         error["fields"] = fields
@@ -27,7 +27,7 @@ def error_response(
 
 
 def register_error_handlers(app: Flask) -> None:
-    """Register API-safe error serialization without leaking implementation detail."""
+    # bind error handles
 
     @app.errorhandler(ApiProblem)
     def handle_api_problem(error: ApiProblem) -> tuple[Response, int]:

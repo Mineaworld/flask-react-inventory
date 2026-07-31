@@ -1,4 +1,4 @@
-"""HTTP routes for the inventory JSON API."""
+# inventory api routes
 
 from __future__ import annotations
 
@@ -102,7 +102,7 @@ def _serialize_partner(partner: Supplier | Customer) -> dict[str, Any]:
 
 
 def _serialize_sale_customer(customer: Customer) -> dict[str, Any]:
-    """Expose the minimum active-customer data a staff sale draft needs."""
+    # serialize sale customer
     return {"id": customer.id, "name": customer.name, "code": f"CUS-{customer.id:05d}"}
 
 
@@ -202,7 +202,7 @@ def _text_query() -> str:
 
 
 def register_api_routes(api: Blueprint) -> None:
-    """Attach all authenticated inventory resources to the shared API blueprint."""
+    # register api blueprint
     register_auth_routes(api)
 
     @api.get("/categories")
