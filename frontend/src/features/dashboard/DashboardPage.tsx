@@ -19,6 +19,7 @@ type DashboardPageProps = {
 const rangeDays: Record<DashboardRange, number> = { today: 1, week: 7, month: 30 };
 const dashboardRanges: DashboardRange[] = ["today", "week", "month"];
 
+// check manager data
 function managerData(data: DashboardData): data is DashboardData & Required<Pick<DashboardData, "activity" | "draft_purchase_count" | "draft_sale_count" | "latest_movements" | "purchases_total_usd" | "sales_total_usd" | "stock_value_usd">> {
   return typeof data.stock_value_usd === "string"
     && typeof data.sales_total_usd === "string"
@@ -29,6 +30,7 @@ function managerData(data: DashboardData): data is DashboardData & Required<Pick
     && typeof data.draft_sale_count === "number";
 }
 
+// render metric card
 const MetricCard = ({ icon, label, value, tone = "olive" }: { icon: ReactNode; label: string; tone?: "olive" | "teal" | "amber"; value: string }) => {
   const tones = {
     olive: "bg-[var(--olive-soft)] text-[var(--olive-strong)]",
@@ -57,6 +59,7 @@ function zeroFilledActivity(activity: DashboardActivity[], periodDays: number): 
   });
 }
 
+// render activity chart
 const ActivityChart = ({ activity, periodDays }: { activity: DashboardActivity[]; periodDays: number }) => {
   const { t, i18n } = useTranslation();
   const points = zeroFilledActivity(activity, periodDays);
@@ -72,7 +75,6 @@ const ActivityChart = ({ activity, periodDays }: { activity: DashboardActivity[]
     },
   } satisfies ChartConfig;
   
-  // Convert string values to numbers for recharts
   const chartData = points.map((p) => ({
     date: p.date,
     sales: Number(p.sales_usd),
@@ -155,6 +157,7 @@ const ActivityChart = ({ activity, periodDays }: { activity: DashboardActivity[]
   );
 };
 
+// render movement feed
 const MovementFeed = ({ movements }: { movements: StockMovement[] }) => {
   const { t } = useTranslation();
   return (
@@ -173,6 +176,7 @@ const MovementFeed = ({ movements }: { movements: StockMovement[] }) => {
   );
 };
 
+// render dash view
 export const DashboardPage = ({ role }: DashboardPageProps) => {
   const { t, i18n } = useTranslation();
   const [range, setRange] = useState<DashboardRange>("month");

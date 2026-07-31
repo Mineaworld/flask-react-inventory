@@ -1,11 +1,12 @@
-﻿import * as React from "react"
+import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
 
-// Format: { THEME_NAME: CSS_SELECTOR }
+// setup chart theme
 const THEMES = { light: "", dark: ".dark" } as const
 
+// setup chart config
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
@@ -318,7 +319,7 @@ const ChartLegendContent = React.forwardRef<
 )
 ChartLegendContent.displayName = "ChartLegend"
 
-// Helper to extract item config from a payload.
+// get payload config
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,

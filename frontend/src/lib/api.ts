@@ -46,6 +46,7 @@ export class ApiError extends Error {
 
 let csrfToken: string | null = null;
 
+// get api base url
 function apiBaseUrl(): string {
   const configured = import.meta.env.VITE_API_BASE_URL?.trim();
   return (configured || DEFAULT_API_BASE_URL).replace(/\/$/, "");
@@ -106,6 +107,7 @@ async function csrf(): Promise<string> {
   return csrfToken;
 }
 
+// do request env
 async function requestEnvelope<T>(
   path: string,
   options: ApiRequestOptions = {},
@@ -167,6 +169,7 @@ async function requestPage<T>(path: string): Promise<PaginatedResult<T>> {
   return { data: payload.data, meta: payload.meta };
 }
 
+// export api client
 export const apiClient = {
   get: <T>(path: string) => request<T>(path),
   getPage: <T>(path: string) => requestPage<T>(path),

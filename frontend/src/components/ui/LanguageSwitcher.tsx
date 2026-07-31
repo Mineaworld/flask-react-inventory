@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Select } from "./Select";
-import "flag-icons/css/flag-icons.min.css"; // Ensure it's imported if not already
+import "flag-icons/css/flag-icons.min.css";
 
+// handle lang switch
 export const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
 

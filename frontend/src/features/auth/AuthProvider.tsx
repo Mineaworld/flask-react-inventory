@@ -28,6 +28,7 @@ type AuthProviderProps = {
 const AUTH_QUERY_KEY = ["auth", "me"] as const;
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+// provide auth wrap
 export const AuthProvider = ({ children, initialSession }: AuthProviderProps) => {
   const queryClient = useQueryClient();
   const [sessionOverride, setSessionOverride] = useState<SessionUser | null | undefined>(initialSession);
@@ -55,7 +56,6 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     try {
       await logoutMutation.mutateAsync();
     } catch {
-      // A local sign-out must succeed even when the expired session rejects logout.
     } finally {
       clearCsrfToken();
       queryClient.clear();
@@ -77,6 +77,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// use auth hook
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
   if (!context) {

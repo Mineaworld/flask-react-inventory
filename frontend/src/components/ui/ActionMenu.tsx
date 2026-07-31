@@ -18,6 +18,7 @@ type ActionMenuProps = {
   triggerLabel: string;
 };
 
+// render action menu
 export const ActionMenu = ({ items, triggerLabel }: ActionMenuProps) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -95,7 +96,7 @@ export const ActionMenu = ({ items, triggerLabel }: ActionMenuProps) => {
               role="menu"
               style={{
                 top: rect.bottom + 4,
-                left: rect.right - 192, // 192px = w-48
+                left: rect.right - 192,
               }}
             >
               {items && items.length > 0 ? (

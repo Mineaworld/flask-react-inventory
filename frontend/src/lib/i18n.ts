@@ -4,6 +4,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import enTranslations from "../locales/en/translation.json";
 import kmTranslations from "../locales/km/translation.json";
 
+// init i18n tool
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -16,10 +17,10 @@ i18n
         translation: kmTranslations,
       },
     },
-    lng: "km", // Set default language to Khmer
+    lng: "km",
     fallbackLng: "en",
     interpolation: {
-      escapeValue: false, // React safely escapes XSS by default
+      escapeValue: false,
     },
   });
 

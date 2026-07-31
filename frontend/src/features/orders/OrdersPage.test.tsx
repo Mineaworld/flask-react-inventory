@@ -114,6 +114,7 @@ const pickerPage = <T,>(data: T[], currentPage: number, pages = 2) => ({
   meta: { page: currentPage, pages, per_page: 100, total: 101 },
 });
 
+// render page helper
 function renderPage(element: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   const invalidate = vi.spyOn(queryClient, "invalidateQueries");
@@ -125,6 +126,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+// test purchase page
 describe("PurchasePage", () => {
   it("shows a loading state without a false error while orders are pending", () => {
     vi.mocked(apiClient.getPage).mockImplementation(() => new Promise(() => undefined));
@@ -260,6 +262,7 @@ describe("PurchasePage", () => {
   });
 });
 
+// test sale page
 describe("SalesPage", () => {
   it("loads every safe customer page for Staff without unsupported sorting parameters", async () => {
     const laterCustomer = { id: 104, name: "Later Customer", code: "CUS-00104" };

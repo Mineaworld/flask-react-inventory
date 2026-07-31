@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Button } from "./shadcn-button";
 import { ChevronDown } from "lucide-react";
@@ -14,6 +14,7 @@ type DropdownMenuProps = {
   children: React.ReactNode;
 };
 
+// render dropdown menu
 const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -22,7 +23,7 @@ const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
     setIsOpen(!isOpen);
   };
 
-  // Handle clicking outside to close
+  // handle outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
