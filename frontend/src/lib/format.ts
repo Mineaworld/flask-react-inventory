@@ -38,6 +38,15 @@ export function formatExchangeRate(value: number | string | null | undefined): s
   return exchangeRateFormatter.format(numberOrZero(value));
 }
 
+const zeroDecimalFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 export function formatCurrency(value: number | string | null | undefined, currency: Currency): string {
-  return `${currency === "USD" ? "$" : "៛"}${formatDecimal(value)}`;
+  const num = numberOrZero(value);
+  if (currency === "KHR") {
+    return `៛${zeroDecimalFormatter.format(num)}`;
+  }
+  return `$${twoDecimalFormatter.format(num)}`;
 }

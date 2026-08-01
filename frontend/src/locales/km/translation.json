@@ -80,7 +80,7 @@
     "search_placeholder": "ស្វែងរក..."
   },
   "dashboard": {
-    "title": "ចង្វាក់ស្តុកថ្ងៃនេះ",
+    "title": "ផ្ទាំងគ្រប់គ្រង",
     "unavailable": "ផ្ទាំងគ្រប់គ្រងមិនមានទេ",
     "low_stock": "ស្តុកតិច",
     "open_drafts": "ឯកសារព្រាងបើក",
@@ -96,10 +96,12 @@
     "items": "{{count}} មុខ",
     "items_plural": "{{count}} មុខ",
     "sale_drafts": "ឯកសារព្រាងការលក់ចំនួន {{count}}",
-    "sale_drafts_plural": "ឯកសារព្រាងការលក់ចំនួន {{count}} ត្រូវការការយកចិត្តទុកដាក់",
+    "sale_drafts_plural": "ឯកសារព្រាងការលក់ {{count}}",
     "table_product": "ផលិតផល",
     "table_on_hand": "ស្តុកមាន",
     "table_reorder": "កម្ម៉ង់បន្ថែម",
+    "table_action": "សកម្មភាព",
+    "quick_reorder": "កម្ម៉ង់រហ័ស",
     "no_movement": "មិនទាន់មានចលនាស្តុកនៅឡើយទេ។",
     "all_healthy": "ផលិតផលទាំងអស់នៅលើយកម្រិតកម្ម៉ង់បន្ថែម។",
     "error_loading": "ទិន្នន័យផ្ទាំងគ្រប់គ្រងមិនអាចផ្ទុកបានទេ។",

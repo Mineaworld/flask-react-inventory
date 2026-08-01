@@ -80,7 +80,7 @@
     "search_placeholder": "Search..."
   },
   "dashboard": {
-    "title": "Today's stock pulse",
+    "title": "Dashboard",
     "unavailable": "Dashboard unavailable",
     "low_stock": "Low stock",
     "open_drafts": "Open drafts",
@@ -96,12 +96,14 @@
     "items": "{{count}} item",
     "items_plural": "{{count}} items",
     "sale_drafts": "{{count}} sale draft",
-    "sale_drafts_plural": "{{count}} sale drafts need your attention",
+    "sale_drafts_plural": "{{count}} sale drafts",
     "table_product": "Product",
     "table_on_hand": "On hand",
     "table_reorder": "Reorder",
-    "no_movement": "Nothing has moved through stock yet.",
-    "all_healthy": "All products are above reorder level.",
+    "table_action": "Action",
+    "quick_reorder": "Quick Reorder",
+    "no_movement": "No stock movements yet.",
+    "all_healthy": "All products are stocked.",
     "error_loading": "Dashboard data could not be loaded.",
     "trend_label": "Sales and purchases trend",
     "loading": "Loading dashboard"

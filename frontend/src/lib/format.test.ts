@@ -15,8 +15,8 @@ describe("decimal display formatting", () => {
     expect(formatExchangeRate("4100.123456")).toBe("4,100.123456");
   });
 
-  it("formats USD and KHR with the same two-decimal rule", () => {
+  it("formats USD with decimals and KHR without decimals", () => {
     expect(formatCurrency("20.0000", "USD")).toBe("$20.00");
-    expect(formatCurrency("145000", "KHR")).toBe("៛145,000.00");
+    expect(formatCurrency("145000", "KHR")).toBe("៛145,000");
   });
 });
