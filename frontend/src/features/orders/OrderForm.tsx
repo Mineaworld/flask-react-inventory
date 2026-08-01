@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { ReactNode } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,7 @@ import { estimateDocument } from "./decimal";
 type OrderKind = "purchase" | "sale";
 type EditableOrder = Purchase | Sale;
 type PartnerChoice = { id: number; is_active?: boolean; name: string };
-type ProductChoice = { id: number; is_active?: boolean; name: string; sku?: string };
+type ProductChoice = { id: number; is_active?: boolean; name: string; sku?: string; default_sale_price_usd?: string };
 
 type OrderFormProps = {
   kind: OrderKind;
@@ -60,8 +60,8 @@ const formSchema = z.object({
 type OrderFormValues = z.infer<typeof formSchema>;
 
 const Field = ({ children, error, label }: { children: ReactNode; error?: string; label: string }) => (
-  <label className="grid gap-1.5 text-sm font-semibold text-[var(--ink)]">
-    <span>{label}</span>
+  <label className="flex min-w-0 flex-col gap-1.5 text-sm font-semibold text-[var(--ink)]">
+    <span className="truncate">{label}</span>
     {children}
     {error ? <span className="text-sm font-medium text-[var(--coral-strong)]">{error}</span> : null}
   </label>
@@ -112,9 +112,30 @@ export const OrderForm = ({ kind, onClose, order, role }: OrderFormProps) => {
   const exchangeRate = form.watch("exchange_rate_to_usd");
   const watchedLines = form.watch("items");
 
+  const prevCurrency = useRef(currency);
+
   useEffect(() => {
     if (currency === "USD" && form.getValues("exchange_rate_to_usd") !== "1.00") {
       form.setValue("exchange_rate_to_usd", "1.00", { shouldValidate: true });
+    } else if (currency === "KHR" && form.getValues("exchange_rate_to_usd") === "1.00") {
+      form.setValue("exchange_rate_to_usd", "4000", { shouldValidate: true });
+    }
+
+    if (prevCurrency.current !== currency) {
+      const rate = Number(form.getValues("exchange_rate_to_usd")) || (currency === "KHR" ? 4000 : 1);
+      const items = form.getValues("items");
+      const newItems = items.map((item) => {
+        if (!item.unit_amount) return item;
+        let amount = Number(item.unit_amount);
+        if (prevCurrency.current === "USD" && currency === "KHR") {
+          amount *= rate;
+        } else if (prevCurrency.current === "KHR" && currency === "USD") {
+          amount = rate ? amount / rate : 0;
+        }
+        return { ...item, unit_amount: amount ? amount.toString() : "" };
+      });
+      form.setValue("items", newItems, { shouldValidate: true });
+      prevCurrency.current = currency;
     }
   }, [currency, form]);
 

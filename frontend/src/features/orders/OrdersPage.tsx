@@ -51,7 +51,7 @@ function displayAmount(order: Order): string {
 
 const SortButton = ({ active, children, direction, onClick }: { active: boolean; children: ReactNode; direction: "asc" | "desc"; onClick: () => void }) => (
   <button className={`inline-flex items-center gap-1 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--olive)] ${active ? "text-[var(--olive-strong)]" : "hover:text-[var(--ink)]"}`} type="button" onClick={onClick}>
-    {children}<span aria-hidden="true">{active ? (direction === "asc" ? "â†‘" : "â†“") : "↕"}</span>
+    {children}<span aria-hidden="true">{active ? (direction === "asc" ? "↑" : "↓") : "↕"}</span>
   </button>
 );
 

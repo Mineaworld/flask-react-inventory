@@ -40,7 +40,7 @@ function partnerLabel(tab: PartnerTab): "Customer" | "Supplier" { return tab ===
 function partnerValues(partner?: Partner): PartnerFormValues { return { name: partner?.name ?? "", contact_name: partner?.contact_name ?? "", email: partner?.email ?? "", phone: partner?.phone ?? "", address: partner?.address ?? "" }; }
 function formatDate(value: string): string { return dateTime.format(new Date(value)); }
 
-const Field = ({ children, error, label }: { children: ReactNode; error?: string; label: string }) => <label className="grid gap-1.5 text-sm font-semibold text-[var(--ink)]"><span>{label}</span>{children}{error ? <span className="text-sm font-medium text-[var(--coral-strong)]">{error}</span> : null}</label>;
+const Field = ({ children, error, label }: { children: ReactNode; error?: string; label: string }) => <label className="flex min-w-0 flex-col gap-1.5 text-sm font-semibold text-[var(--ink)]"><span className="truncate">{label}</span>{children}{error ? <span className="text-sm font-medium text-[var(--coral-strong)]">{error}</span> : null}</label>;
 
 const PartnerSortButton = ({ active, children, direction, onClick }: { active: boolean; children: ReactNode; direction: "asc" | "desc"; onClick: () => void }) => <button className={`inline-flex items-center gap-1 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--olive)] ${active ? "text-[var(--olive-strong)]" : "hover:text-[var(--ink)]"}`} type="button" onClick={onClick}>{children}<ChevronsUpDown aria-hidden="true" size={13} /><span className="sr-only">Sort {direction === "asc" ? "ascending" : "descending"}</span></button>;
 

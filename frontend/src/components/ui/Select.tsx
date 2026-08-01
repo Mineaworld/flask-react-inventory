@@ -53,20 +53,20 @@ export const Select: React.FC<SelectProps> = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label={props["aria-label"]}
-        className={`flex min-h-[38px] w-full items-center justify-between rounded-lg border bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--olive)] ${
+        className={`flex min-h-[38px] w-full items-center justify-between gap-2 rounded-lg border bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--olive)] ${
           hasError ? "border-[var(--coral-strong)]" : "border-[var(--line-strong)]"
         }`}
       >
-        <div className="flex items-center gap-2 truncate">
+        <div className="flex min-w-0 items-center gap-2">
           {selectedOption?.icon}
           <span className="truncate">{selectedOption ? selectedOption.label : displayPlaceholder}</span>
         </div>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.4, ease: "easeInOut", type: "spring" }}
-          className="ml-2 text-[var(--muted)]"
+          className="ml-2 shrink-0 text-[var(--muted)]"
         >
-          <ChevronDown className="h-4 w-4 shrink-0" />
+          <ChevronDown className="h-4 w-4" />
         </motion.span>
       </button>
 
