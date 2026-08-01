@@ -25,10 +25,9 @@ describe("DashboardPage", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText("2 sale drafts need your attention")).toBeInTheDocument();
-    expect(screen.getByText("Stapler")).toBeInTheDocument();
-    expect(screen.getByText("0")).toBeInTheDocument();
-    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(await screen.findByText("Stapler")).toBeInTheDocument();
+    expect(screen.getByText("0 each")).toBeInTheDocument();
+    expect(screen.getByText("2 each")).toBeInTheDocument();
     expect(screen.queryByText("Stock value")).not.toBeInTheDocument();
     expect(screen.queryByRole("figure", { name: /Sales and purchases trend/i })).not.toBeInTheDocument();
   });

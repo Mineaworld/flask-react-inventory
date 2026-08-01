@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Activity, ArrowDownRight, ArrowUpRight, DollarSign, PackageSearch, ReceiptText, TrendingUp } from "lucide-react";
+import { Activity, ArrowDownRight, ArrowUpRight, DollarSign, PackageSearch, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import { Badge } from "../../components/ui/Badge";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "../../components/ui/chart";
-import { DataTable } from "../../components/ui/DataTable";
+
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { apiClient, ApiError } from "../../lib/api";
 import { formatCurrency, formatQuantity } from "../../lib/format";
@@ -179,6 +180,7 @@ const MovementFeed = ({ movements }: { movements: StockMovement[] }) => {
 // render dash view
 export const DashboardPage = ({ role }: DashboardPageProps) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [range, setRange] = useState<DashboardRange>("month");
   const dashboardQuery = useQuery({ queryKey: ["dashboard", range], queryFn: () => apiClient.get<DashboardData>(`/dashboard?range=${range}`), retry: false });
   const today = new Intl.DateTimeFormat(i18n.language === "km" ? "km-KH" : "en-US", { weekday: "long", month: "long", day: "numeric" }).format(new Date());
@@ -193,7 +195,7 @@ export const DashboardPage = ({ role }: DashboardPageProps) => {
 
   const data = dashboardQuery.data;
   const canSeeManagerMetrics = (role === "admin" || role === "manager") && managerData(data);
-  const ownDrafts = data.own_draft_sale_count || 0;
+
   const periodDays = data.period_days ?? rangeDays[range];
 
   return (
@@ -211,25 +213,53 @@ export const DashboardPage = ({ role }: DashboardPageProps) => {
         </section>
       ) : null}
 
-      <section className="grid gap-4 xl:grid-cols-[1.45fr_0.9fr]">
-        <article className="surface-panel overflow-hidden">
-          <div className="flex items-center justify-between gap-3 px-5 py-4"><h2 className="font-display text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{t("dashboard.low_stock")}</h2><Badge tone={data.low_stock_count > 0 ? "warning" : "success"}>{t(data.low_stock_count === 1 ? "dashboard.items" : "dashboard.items_plural", { count: data.low_stock_count })}</Badge></div>
-          <div className="border-t border-[var(--line)]">
-            {data.low_stock.length === 0 ? <p className="px-5 py-8 text-sm text-[var(--teal)]">{t("dashboard.all_healthy")}</p> : (
-              <DataTable>
-                <thead><tr className="bg-[var(--canvas)] text-sm font-medium text-[var(--muted)]"><th className="px-5 py-3 font-semibold">{t("dashboard.table_product")}</th><th className="px-5 py-3 text-right font-semibold">{t("dashboard.table_on_hand")}</th><th className="px-5 py-3 text-right font-semibold">{t("dashboard.table_reorder")}</th></tr></thead>
-                <tbody>{data.low_stock.map((item) => <tr className="data-row border-t border-[var(--line)]" key={item.product_id}><td className="px-5 py-3"><p className="font-semibold text-[var(--ink)]">{item.product_name}</p><p className="mt-0.5 text-sm text-[var(--muted)]">{item.unit}</p></td><td className="px-5 py-3 text-right font-semibold tabular-nums text-[var(--coral-strong)]">{formatQuantity(item.quantity)}</td><td className="px-5 py-3 text-right tabular-nums text-[var(--muted)]">{formatQuantity(item.reorder_level)}</td></tr>)}</tbody>
-              </DataTable>
+      <section className="mt-4">
+        <article className="surface-panel overflow-hidden p-0 sm:p-0">
+          <div className="flex items-center justify-between gap-3 px-6 py-5 border-b border-[var(--line)]">
+            <h2 className="font-display text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{t("dashboard.low_stock")}</h2>
+            <Badge tone="success">{t(data.low_stock_count === 1 ? "dashboard.items" : "dashboard.items_plural", { count: data.low_stock_count })}</Badge>
+          </div>
+          <div>
+            {data.low_stock.length === 0 ? (
+              <p className="px-6 py-8 text-sm text-[var(--teal)]">{t("dashboard.all_healthy")}</p>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[var(--line)] text-sm font-medium text-[var(--muted)]">
+                    <th className="px-6 py-4 font-medium">{t("dashboard.table_product")}</th>
+                    <th className="px-6 py-4 font-medium">{t("dashboard.table_on_hand")}</th>
+                    <th className="px-6 py-4 font-medium">{t("dashboard.table_reorder")}</th>
+                    <th className="px-6 py-4 font-medium text-right">{t("dashboard.table_action")}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--line)]">
+                  {data.low_stock.map((item) => (
+                    <tr className="transition-colors hover:bg-[var(--canvas)]" key={item.product_id}>
+                      <td className="px-6 py-4">
+                        <p className="font-semibold text-[var(--ink)]">{item.product_name}</p>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-[var(--ink)]">
+                        {formatQuantity(item.quantity)} {item.unit}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[var(--muted)]">
+                        {formatQuantity(item.reorder_level)} {item.unit}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button type="button" onClick={() => navigate("/purchases")} className="inline-flex items-center justify-center rounded-lg bg-[var(--teal)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[var(--teal-strong)] active:scale-95">
+                          {t("dashboard.quick_reorder")}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         </article>
-        <article className="rounded-2xl bg-[var(--ink)] p-5 text-[var(--on-ink)] shadow-[var(--shadow-elevated)] sm:p-6">
-          <div className="flex items-center justify-between gap-3"><h2 className="font-display text-lg font-semibold tracking-[-0.03em]">{t("dashboard.open_drafts")}</h2><ReceiptText className="text-[var(--on-ink-muted)]" size={19} /></div>
-          {canSeeManagerMetrics ? <dl className="mt-7 grid grid-cols-2 divide-x divide-white/10"><div className="pr-4"><dd className="font-display text-3xl font-semibold tabular-nums">{data.draft_purchase_count}</dd><dt className="mt-2 text-sm text-[var(--on-ink-muted)]">{t("dashboard.purchases")}</dt></div><div className="pl-4"><dd className="font-display text-3xl font-semibold tabular-nums">{data.draft_sale_count}</dd><dt className="mt-2 text-sm text-[var(--on-ink-muted)]">{t("dashboard.sales")}</dt></div></dl> : <p className="mt-7 font-display text-xl font-semibold">{t(ownDrafts === 1 ? "dashboard.sale_drafts" : "dashboard.sale_drafts_plural", { count: ownDrafts })}</p>}
-        </article>
       </section>
 
-      {canSeeManagerMetrics ? <section className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]"><article className="surface-panel p-5 sm:p-6"><div className="flex items-center justify-between"><h2 className="font-display text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{t("dashboard.sales_purchases")}</h2><Activity size={19} className="text-[var(--olive)]" /></div><ActivityChart activity={data.activity} periodDays={periodDays} /></article><article className="surface-panel p-5 sm:p-6"><h2 className="font-display text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{t("dashboard.recent_movements")}</h2><MovementFeed movements={data.latest_movements} /></article></section> : null}
+      {canSeeManagerMetrics ? <section className="grid gap-4 xl:grid-cols-2"><article className="surface-panel p-5 sm:p-6"><div className="flex items-center justify-between"><h2 className="font-display text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{t("dashboard.sales_purchases")}</h2><Activity size={19} className="text-[var(--olive)]" /></div><ActivityChart activity={data.activity} periodDays={periodDays} /></article><article className="surface-panel p-5 sm:p-6"><h2 className="font-display text-lg font-semibold tracking-[-0.03em] text-[var(--ink)]">{t("dashboard.recent_movements")}</h2><MovementFeed movements={data.latest_movements} /></article></section> : null}
+
     </div>
   );
 };
