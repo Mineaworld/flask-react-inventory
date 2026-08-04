@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { MemoryRouter } from "react-router-dom";
 import { DashboardPage } from "./DashboardPage";
 import { apiClient } from "../../lib/api";
 
@@ -21,7 +22,9 @@ describe("DashboardPage", () => {
 
     render(
       <QueryClientProvider client={client}>
-        <DashboardPage role="staff" />
+        <MemoryRouter>
+          <DashboardPage role="staff" />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
 
@@ -50,7 +53,9 @@ describe("DashboardPage", () => {
 
     render(
       <QueryClientProvider client={client}>
-        <DashboardPage role="manager" />
+        <MemoryRouter>
+          <DashboardPage role="manager" />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
 
