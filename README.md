@@ -1,5 +1,7 @@
 # Inventory Management System
 
+https://github.com/user-attachments/assets/e42c5743-bbf0-406b-b4b2-4fa045b14910
+
 A Flask and database course project for managing products, stock, purchases, and sales. Flask provides the API, SQLAlchemy saves data in XAMPP MariaDB, and React provides the user interface.
 
 This machine uses the MariaDB 10.4 server included with XAMPP on port `3307`. The project uses SQLAlchemy's `mysql+mysqldb` connection and the same `mysqlclient` driver installed in the class reference project.
